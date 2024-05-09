@@ -27,8 +27,8 @@ class OthelloGUI:
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 2, 0, 0, 0],
             [0, 0, 0, 2, 1, 0, 0, 0],
+            [0, 0, 0, 1, 2, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]
@@ -98,7 +98,10 @@ class OthelloGUI:
             [None] * self.board_size for _ in range(self.board_size)]
         self.current_player = 1 if self.user_color == 1 else 2
         # Black and white colors for players
-        self.player_colors = {1: "#000000", 2: "#FFFFFF"}
+        self.player_colors = {1: "#000000", 2: "#FFFFFF", 3: "#C3EFC3"}
+        # Add possible moves to the initial state
+        self.initial_state = mark_possible_moves(self.initial_state, self.user_color)
+        print(self.initial_state)
 
         for row in range(self.board_size):
             for col in range(self.board_size):
@@ -111,7 +114,8 @@ class OthelloGUI:
                 button.config(command=lambda r=row,
                               c=col: self.button_click(r, c))
                 self.buttons[row][col] = button
-                if self.initial_state[row][col] != 0:
+                # Only the possible moves are clickable
+                if self.initial_state[row][col] != 3:
                     button.config(state="disabled")
 
         # Create a frame for player info

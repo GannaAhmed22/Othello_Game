@@ -1,6 +1,3 @@
-from PossibleMovesIndicator import mark_possible_moves
-
-
 class AlphaBetaAI:
 
     def __init__(self, difficulty, color):

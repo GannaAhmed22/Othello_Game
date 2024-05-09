@@ -1,3 +1,6 @@
+import random
+import PossibleMovesIndicator
+
 class AlphaBetaAI:
 
     def __init__(self, difficulty, color):
@@ -5,15 +8,23 @@ class AlphaBetaAI:
         self.color = color
 
     def get_next_move(self, board):
-        if self.difficulty == "easy":
-            return self.easy_mode(board)
-        elif self.difficulty == "medium":
-            return self.medium_mode(board)
-        elif self.difficulty == "hard":
-            return self.hard_mode(board)
-        else:
-            print("Invalid difficulty level")
+        possible_moves = []
+        for row in range(len(board)):
+            for col in range(len(board[0])):
+                if board[row][col] == 3: 
+                    possible_moves.append([row, col])
+        return possible_moves[0] if possible_moves else None
+    
+        # if self.difficulty == "easy":
+        #     return self.easy_mode(board)
+        # elif self.difficulty == "medium":
+        #     return self.medium_mode(board)
+        # elif self.difficulty == "hard":
+        #     return self.hard_mode(board)
+        # else:
+        #     print("Invalid difficulty level")
 
+        
     def easy_mode(self, board):
         print("Easy")
         print(self.color)

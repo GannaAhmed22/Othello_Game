@@ -2,6 +2,7 @@ import tkinter as tk
 from AlphaBetaAlgorithm import *
 from PossibleMovesIndicator import *
 
+
 def center_window(window, width, height):
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
@@ -21,7 +22,7 @@ class OthelloGUI:
         self.master.configure(bg="#2E4053")  # Background color
         center_window(self.master, 700, 675)
         self.player_counts = {1: 2, 2: 2}  # Initial counts (2 for each player)
-        self.player_pieces = {1: 32, 2: 32}
+        self.player_pieces = {1: 30, 2: 30}
         self.no_possible_moves = False
         self.start_window()
         self.ai = AlphaBetaAI("", 0)
@@ -86,11 +87,11 @@ class OthelloGUI:
         self.ai = AlphaBetaAI(level, ai_color)
         self.create_board()
         self.create_return_button()
-        self.print_board() 
+        self.print_board()
 
         # make AI start if it was black
         if self.ai.color == 1:
-            move = self.ai.get_next_move(self.initial_state) 
+            move = self.ai.get_next_move(self.initial_state)
             self.update_board(move[0], move[1])
 
     def create_board(self):
@@ -104,12 +105,13 @@ class OthelloGUI:
         self.board_size = 8
         self.buttons = [
             [None] * self.board_size for _ in range(self.board_size)]
-        self.current_player = 1 # black plays first
+        self.current_player = 1  # black plays first
         # Black and white colors for players
         self.player_colors = {1: "#000000", 2: "#FFFFFF", 3: "#C3EFC3"}
         # Add possible moves to the initial state
         self.initial_state = mark_possible_moves(self.initial_state, self.current_player)
         # print(self.initial_state)
+
 
         for row in range(self.board_size):
             for col in range(self.board_size):
@@ -153,23 +155,25 @@ class OthelloGUI:
 
         self.update_player_counts()
         self.update_player_labels()
-    
+
     def button_click(self, row, col):
         # Set user move to the board
         self.update_board(row, col)
-       
+
         # Get AI move and set it to board
-        if self.current_player == self.ai.color:
-           move = self.ai.get_next_move(self.initial_state) 
-           self.update_board(move[0], move[1])
+        while self.current_player == self.ai.color:
+            move = self.ai.get_next_move(self.initial_state)
+            if move is None or self.no_possible_moves or self.check_winner() is not None:
+                break
+            self.update_board(move[0], move[1])
 
     def update_board(self, row, col):
         color = self.player_colors[self.current_player]
         self.buttons[row][col].config(bg=color, state="disabled")
         self.initial_state[row][col] = self.current_player
         self.player_pieces[self.current_player] -= 1
-        
-        print("after move: ", self.current_player) 
+
+        print("after move: ", self.current_player)
 
         # Flip opponent's disks
         self.flip_disks(row, col)
@@ -178,7 +182,7 @@ class OthelloGUI:
         self.update_player_labels()
 
         winner = self.check_winner()
-        if winner :
+        if winner:
             print(winner)
             self.display_winner_window(winner)
             return
@@ -186,7 +190,9 @@ class OthelloGUI:
             # Switch to the next player
             self.current_player = 2 if self.current_player == 1 else 1
 
-            # mark board with possible moves 
+            # mark board with possible moves
+            print("Before get possible moves: ", self.current_player)
+            self.print_board()
             self.initial_state = mark_possible_moves(self.initial_state, self.current_player)
             print("Possible moves for: ", self.current_player)
             self.print_board()
@@ -196,6 +202,9 @@ class OthelloGUI:
                 self.current_player = 2 if self.current_player == 1 else 1
                 # mark board with possible moves
                 self.initial_state = mark_possible_moves(self.initial_state, self.current_player)
+                print("Possible moves for: ", self.current_player)
+                self.print_board()
+
                 if not self.check_possible_moves():
                     # in case no possible moves for both palyers game is over
                     if self.current_player == self.user_color:
@@ -203,14 +212,11 @@ class OthelloGUI:
                     self.no_possible_moves = True
                     winner = self.check_winner()
                     if winner:
-                      print(winner)
-                      self.display_winner_window(winner)
-                      return
+                        print(winner)
+                        self.display_winner_window(winner)
+                        return
 
-                if self.current_player == self.ai.color:
-                   move = self.ai.get_next_move(self.initial_state)  
-                   self.update_board(move[0], move[1])
-            
+
             # Update possible moves for Human in GUI
             if self.current_player == self.user_color:
                 self.update_gui()
@@ -226,9 +232,9 @@ class OthelloGUI:
 
     def check_possible_moves(self):
         for row in range(self.board_size):
-              for col in range(self.board_size):
-                    if self.initial_state[row][col] == 3:
-                         return True
+            for col in range(self.board_size):
+                if self.initial_state[row][col] == 3:
+                    return True
         return False
 
     def flip_disks(self, row, col):
@@ -253,26 +259,26 @@ class OthelloGUI:
         end = self.board_size if step == 1 else -1
 
         for j in range(start, end, step):
-                if is_horizontal:
-                    current_cell = self.initial_state[row][j]
-                else:
-                    current_cell = self.initial_state[j][col]
+            if is_horizontal:
+                current_cell = self.initial_state[row][j]
+            else:
+                current_cell = self.initial_state[j][col]
 
-                if current_cell == 0 or current_cell == 3:
-                    break
-                if current_cell == self.current_player:
-                    is_outflank = True
-                    break
+            if current_cell == 0 or current_cell == 3:
+                break
+            if current_cell == self.current_player:
+                is_outflank = True
+                break
 
         end = col if is_horizontal else row
         if is_outflank:
             for i in range(j - step, end, -step):
                 if is_horizontal:
                     self.initial_state[row][i] = self.current_player
-                
+
                 else:
                     self.initial_state[i][col] = self.current_player
-                   
+
     def create_return_button(self):
         return_button = tk.Button(self.board_frame, text="Return to Main Menu",
                                   command=self.return_to_main, bg="#C0392B", fg="white", font=("Helvetica", 12))
@@ -304,7 +310,11 @@ class OthelloGUI:
         # Update player 2 label
         self.player2_label.config(text=f"{self.player_counts[2]}")
 
-    def check_winner(self): 
+    def check_winner(self):
+        if self.player_pieces[1] == 0 or self.player_pieces[1] == 0:
+            print('disks ran out')
+        if self.no_possible_moves:
+            print('no legal')
         if self.no_possible_moves or self.player_pieces[1] == 0 or self.player_pieces[1] == 0 or sum(self.player_counts.values()) == self.board_size ** 2:
             if self.player_counts[1] > self.player_counts[2]:
                 return "Player 1 wins!"
@@ -340,12 +350,13 @@ class OthelloGUI:
 
     def exit_game(self):
         self.master.destroy()
-    
+
     # only for debug
     def print_board(self):
         for row in self.initial_state:
             print(row)
         print()
+
 
 def main():
     root = tk.Tk()

@@ -22,7 +22,7 @@ def mark_possible_moves(board, color):
         for j in range(len(board[0])):
             if new_board[i][j] == 3:
                 new_board[i][j] = 0
-            if is_valid_move(board, i, j, color):
+            if is_valid_move(new_board, i, j, color):
                 new_board[i][j] = 3
     return new_board
 

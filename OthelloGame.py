@@ -42,6 +42,8 @@ class OthelloGame:
             move = self.ai.get_next_move(self.initial_state)
             self.update_board(move[0], move[1])
 
+
+
         self.gui.update_board_gui()
 
     def check_winner(self):
@@ -172,6 +174,7 @@ class OthelloGame:
                 else:
                     self.initial_state[i][col] = self.current_player
 
+
     def button_click(self, row, col):
         # Set user move to the board
         self.update_board(row, col)
@@ -182,6 +185,8 @@ class OthelloGame:
             if (move is None) or self.no_possible_moves or (self.check_winner() is not None):
                 break
             self.update_board(move[0], move[1])
+
+
 
     def reset_game(self):
         self.board_size = 8

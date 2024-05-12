@@ -1,44 +1,107 @@
-import random
-import PossibleMovesIndicator
+import math
+from PossibleMovesIndicator import mark_possible_moves
 
 class AlphaBetaAI:
-
     def __init__(self, difficulty, color):
         self.difficulty = difficulty
         self.color = color
+        self.depth = self.set_depth(difficulty)
+
+    def set_depth(self, difficulty):
+        if difficulty == "easy":
+            return 1
+        elif difficulty == "medium":
+            return 3
+        elif difficulty == "hard":
+            return 5
 
     def get_next_move(self, board):
-        possible_moves = []
-        for row in range(len(board)):
-            for col in range(len(board[0])):
-                if board[row][col] == 3: 
-                    possible_moves.append([row, col])
-        return possible_moves[0] if possible_moves else None
-    
-        # if self.difficulty == "easy":
-        #     return self.easy_mode(board)
-        # elif self.difficulty == "medium":
-        #     return self.medium_mode(board)
-        # elif self.difficulty == "hard":
-        #     return self.hard_mode(board)
-        # else:
-        #     print("Invalid difficulty level")
+        possible_moves_board = mark_possible_moves(board, self.color)  # Get marked possible moves
+        if self.color == 1:  # Black player starts first
+            return self.alpha_beta_search(possible_moves_board, self.depth, self.color)
+        else:  # White player's turn
+            return self.alpha_beta_search(possible_moves_board, self.depth, self.color)
 
-        
-    def easy_mode(self, board):
-        print("Easy")
-        print(self.color)
-        print(board)
-        pass
+    def alpha_beta_search(self, board, depth, color):
+        def max_value(alpha, beta, depth, color):
+            if depth == 0 or is_game_over(board):
+                return utility_function(board, color)
+            value = -math.inf
+            for move in get_valid_moves(board, color):
+                clone = clone_board(board)
+                make_move(clone, move[0], move[1], color)
+                value = max(value, min_value(alpha, beta, depth - 1, color))
+                alpha = max(alpha, value)
+                if alpha >= beta:
+                    break
+            return value
 
-    def medium_mode(self, board):
-        print("Medium")
-        print(self.color)
-        print(board)
-        pass
+        def min_value(alpha, beta, depth, color):
+            if depth == 0 or is_game_over(board):
+                return utility_function(board, color)
+            value = math.inf
+            for move in get_valid_moves(board, 3 - color):
+                clone = clone_board(board)
+                make_move(clone, move[0], move[1], 3 - color)
+                value = min(value, max_value(alpha, beta, depth - 1, color))
+                beta = min(beta, value)
+                if beta <= alpha:
+                    break
+            return value
 
-    def hard_mode(self, board):
-        print("Hard")
-        print(self.color)
-        print(board)
-        pass
+        def clone_board(board):
+            return [row[:] for row in board]
+
+        def get_valid_moves(board, color):
+            moves = []
+            for i in range(len(board)):
+                for j in range(len(board[0])):
+                    if board[i][j] == 3:
+                        moves.append((i, j))
+            return moves
+
+        def make_move(board, row, col, color):
+            board[row][col] = color
+            opposite_color = 2 if color == 1 else 1
+            directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+            for dr, dc in directions:
+                r, c = row + dr, col + dc
+                if 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == opposite_color:
+                    to_flip = []
+                    while 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == opposite_color:
+                        to_flip.append((r, c))
+                        r += dr
+                        c += dc
+                        if not (0 <= r < len(board) and 0 <= c < len(board[0])):
+                            break
+                    if 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == color:
+                        for flip_r, flip_c in to_flip:
+                            board[flip_r][flip_c] = color
+        #utility function -> calculate the value of a terminal state.
+        def utility_function(board, color):
+            score = 0 
+            for row in board:
+                for cell in row:
+                    if cell == color:
+                        score += 1
+                    elif cell == 3 - color:
+                        score -= 1
+            return score
+
+        def is_game_over(board):
+            return not any(get_valid_moves(board, 1)) and not any(get_valid_moves(board, 2))
+
+        best_move = None
+        alpha = -math.inf
+        beta = math.inf
+        value = -math.inf
+        for move in get_valid_moves(board, color):
+            clone = clone_board(board)
+            make_move(clone, move[0], move[1], color)
+            new_value = min_value(alpha, beta, depth - 1, color)
+            if new_value > value:
+                value = new_value
+                best_move = move
+        return best_move
+
+

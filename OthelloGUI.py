@@ -65,7 +65,7 @@ class OthelloGUI:
 
     def create_board(self):
         self.board_frame = tk.Frame(self.master, bg="#2E4053")
-        self.board_frame.pack(pady=50)
+        self.board_frame.pack(pady=10)
 
         # Create a frame to contain the board and player info
         self.board_container = tk.Frame(self.board_frame, bg="#2E4053")
@@ -111,14 +111,47 @@ class OthelloGUI:
 
         # Create labels for player numbers
         self.player1_label = tk.Label(self.player_info_frame,
-                                      bg="#2E4053", fg="#EAECEE", font=("Helvetica", 12))
+                                      bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
         self.player1_label.grid(
             row=1, column=self.game.board_size // 2 - 1, pady=5, padx=10)
 
         self.player2_label = tk.Label(self.player_info_frame,
-                                      bg="#2E4053", fg="#EAECEE", font=("Helvetica", 12))
+                                      bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
         self.player2_label.grid(
             row=1, column=self.game.board_size // 2, pady=5, padx=10)
+
+        # Create labels for player numbers
+        self.disks_label = tk.Label(self.player_info_frame, text="Disks",
+                                    bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
+        self.disks_label.grid(
+            row=2, column=self.game.board_size // 2 - 2, pady=5, padx=10)
+
+        self.score_label = tk.Label(self.player_info_frame, text="Score",
+                                    bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
+        self.score_label.grid(
+            row=3, column=self.game.board_size // 2 - 2, pady=5, padx=10)
+
+        # Create labels for player numbers
+        self.player1_disks_label = tk.Label(self.player_info_frame,
+                                            bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
+        self.player1_disks_label.grid(
+            row=2, column=self.game.board_size // 2 - 1, pady=5, padx=10)
+
+        self.player2_disks_label = tk.Label(self.player_info_frame,
+                                            bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
+        self.player2_disks_label.grid(
+            row=2, column=self.game.board_size // 2, pady=5, padx=10)
+
+        # Create labels for player numbers
+        self.player1_score_label = tk.Label(self.player_info_frame,
+                                            bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
+        self.player1_score_label.grid(
+            row=3, column=self.game.board_size // 2 - 1, pady=5, padx=10)
+
+        self.player2_score_label = tk.Label(self.player_info_frame,
+                                            bg="#2E4053", fg="#EAECEE", font=("Helvetica", 15, "bold"))
+        self.player2_score_label.grid(
+            row=3, column=self.game.board_size // 2, pady=5, padx=10)
 
     def update_board_gui(self):
         for row in range(self.game.board_size):
@@ -134,11 +167,23 @@ class OthelloGUI:
         self.white_player = "You" if self.game.user_color == 2 else "A.I."
         # Update player 1 label
         self.player1_label.config(
-            text=f"{self.black_player}: {self.game.player_counts[1]}")
+            text=f"{self.black_player}")
+        self.player2_label.config(
+            text=f"{self.white_player}")
 
         # Update player 2 label
-        self.player2_label.config(
-            text=f"{self.white_player}: {self.game.player_counts[2]}")
+        self.player1_disks_label.config(
+            text=f"{self.game.player_pieces[1]}")
+        # Update player 2 label
+        self.player2_disks_label.config(
+            text=f"{self.game.player_pieces[2]}")
+
+        # Update player 2 label
+        self.player1_score_label.config(
+            text=f"{self.game.player_counts[1]}")
+        # Update player 2 label
+        self.player2_score_label.config(
+            text=f"{self.game.player_counts[2]}")
 
     def create_return_button(self):
         return_button = tk.Button(self.board_frame, text="Return to Main Menu",
@@ -160,7 +205,7 @@ class OthelloGUI:
         self.center_window(winner_window, 300, 200)
         winner_window.resizable(False, False)
 
-        winner_label = tk.Label(winner_window, text=f"{winner}",
+        winner_label = tk.Label(winner_window, text=f"{winner}: {self.game.player_counts[1]}\n{self.game.player_counts[2]}",
                                 bg="#2E4053", fg="#EAECEE", font=("Helvetica", 20))
         winner_label.pack(pady=20)
 

@@ -11,7 +11,7 @@ class AlphaBetaAI:
 
     def set_depth(self, difficulty):
         if difficulty == "easy":
-            return 40
+            return 1
         elif difficulty == "medium":
             return 3
         elif difficulty == "hard":
@@ -29,10 +29,18 @@ class AlphaBetaAI:
             if depth == 0 or is_game_over(clone):
                 return utility_function(clone, color)
             value = -math.inf
+            clone = mark_possible_moves(clone, color)
+            print("1")
+            print("_______________")
+            print("depth")
+            print( depth)
             for move in get_valid_moves(clone, color):
                 clone = clone_board(clone)
+                for row in clone:
+                    print(row)
+                print(".....")
                 make_move(clone, move[0], move[1], color)
-                value = max(value, min_value(alpha, beta, depth - 1, color,clone))
+                value = max(value, min_value(alpha, beta, depth - 1, 3-color,clone))
                 alpha = max(alpha, value)
                 if alpha >= beta:
                     break
@@ -42,10 +50,18 @@ class AlphaBetaAI:
             if depth == 0 or is_game_over(clone):
                 return utility_function(clone, color)
             value = math.inf
-            for move in get_valid_moves(clone, 3 - color):
+            clone = mark_possible_moves(clone,color)
+            print("2")
+            print("_______________")
+            print("depth")
+            print( depth)
+            for move in get_valid_moves(clone, color):
                 clone = clone_board(clone)
-                make_move(clone, move[0], move[1], 3 - color)
-                value = min(value, max_value(alpha, beta, depth - 1, color,clone))
+                for row in clone:
+                    print(row)
+                print(".....")
+                make_move(clone, move[0], move[1],  color)
+                value = min(value, max_value(alpha, beta, depth - 1,3- color,clone))
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
@@ -97,10 +113,16 @@ class AlphaBetaAI:
         alpha = -math.inf
         beta = math.inf
         value = -math.inf
+        print("---------------------")
+        print("3")
+
         for move in get_valid_moves(board, color):
             clone = clone_board(board)
+            for row in clone:
+
+                print(row)
             make_move(clone, move[0], move[1], color)
-            new_value = min_value(alpha, beta, depth - 1, color,clone)
+            new_value = max_value(alpha, beta, depth , color,clone)
             if new_value > value:
                 value = new_value
                 best_move = move

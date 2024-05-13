@@ -2,6 +2,7 @@ import math
 
 from PossibleMovesIndicator import mark_possible_moves
 
+
 class AlphaBetaAI:
     def __init__(self, difficulty, color):
         self.difficulty = difficulty
@@ -18,86 +19,97 @@ class AlphaBetaAI:
             return 5
 
     def get_next_move(self, board):
-        possible_moves_board = mark_possible_moves(board, self.color)  # Get marked possible moves
+        possible_moves_board = mark_possible_moves(
+            board, self.color)  # Get marked possible moves
         if self.color == 1:  # Black player starts first
-            return self.alpha_beta_search(possible_moves_board, self.depth, self.color)
+            return self.alpha_beta_search(possible_moves_board, self.depth, self.color, -math.inf, math.inf)
         else:  # White player's turn
-            return self.alpha_beta_search(possible_moves_board, self.depth, self.color)
+            return self.alpha_beta_search(possible_moves_board, self.depth, self.color, -math.inf, math.inf)
 
-    def alpha_beta_search(self, board, depth, color):
-        def max_value(alpha, beta, depth, color,clone):
-            if depth == 0 or is_game_over(clone):
-                return utility_function(clone, color)
+
+
+    def max_value(self,board, depth, alpha, beta, color):
+            if depth == 0 or self.is_game_over(board):
+                return self.utility_function(board, color)
             value = -math.inf
-            clone = mark_possible_moves(clone, color)
-            print("1")
-            print("_______________")
-            print("depth")
-            print( depth)
-            for move in get_valid_moves(clone, color):
-                clone = clone_board(clone)
+            clone = mark_possible_moves(board, color)
+            print(depth)
+            print("max before move")
+            for row in clone:
+                print(row)
+            print()
+            for move in self.get_valid_moves(clone, color):
+                clone = self.make_move(clone, move[0], move[1], color)
+                print("max after move")
                 for row in clone:
                     print(row)
-                print(".....")
-                make_move(clone, move[0], move[1], color)
-                value = max(value, min_value(alpha, beta, depth - 1, 3-color,clone))
+                print()
+
+                value = max(value, self.min_value(clone, depth - 1, alpha, beta, 3 - color))
+                if value==0:break
+
                 alpha = max(alpha, value)
                 if alpha >= beta:
                     break
             return value
 
-        def min_value(alpha, beta, depth, color,clone):
-            if depth == 0 or is_game_over(clone):
-                return utility_function(clone, color)
+
+
+    def min_value(self,board, depth, alpha, beta, color):
+            if depth == 0 or self.is_game_over(board):
+                return self.utility_function(board, color)
             value = math.inf
-            clone = mark_possible_moves(clone,color)
-            print("2")
-            print("_______________")
-            print("depth")
-            print( depth)
-            for move in get_valid_moves(clone, color):
-                clone = clone_board(clone)
+            clone = mark_possible_moves(board, color)
+            print(depth)
+            print("min before move")
+            for row in clone:
+                print(row)
+            print()
+            for move in self.get_valid_moves(clone, 3 - color):
+                clone = self.make_move(clone, move[0], move[1], color)
+                print("min after move")
                 for row in clone:
                     print(row)
-                print(".....")
-                make_move(clone, move[0], move[1],  color)
-                value = min(value, max_value(alpha, beta, depth - 1,3- color,clone))
+                print()
+                value = min(value, self.max_value(
+                    clone, depth - 1, alpha, beta, 3 - color))
+                if value == 0: break
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
             return value
 
-        def clone_board(board):
-            return [row[:] for row in board]
+    def get_valid_moves(self,board, color):
+        moves = []
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == 3:
+                    moves.append((i, j))
+        return moves
 
-        def get_valid_moves(board, color):
-            moves = []
-            for i in range(len(board)):
-                for j in range(len(board[0])):
-                    if board[i][j] == 3:
-                        moves.append((i, j))
-            return moves
+    def make_move(self,board, row, col, color):
+        # Create a new board to avoid modifying the original
+        clone = [row[:] for row in board]
+        clone[row][col] = color
+        opposite_color = 2 if color == 1 else 1
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            if 0 <= r < len(clone) and 0 <= c < len(clone[0]) and clone[r][c] == opposite_color:
+                to_flip = []
+                while 0 <= r < len(clone) and 0 <= c < len(clone[0]) and clone[r][c] == opposite_color:
+                    to_flip.append((r, c))
+                    r += dr
+                    c += dc
+                    if not (0 <= r < len(clone) and 0 <= c < len(clone[0])):
+                        break
+                if 0 <= r < len(clone) and 0 <= c < len(clone[0]) and clone[r][c] == color:
+                    for flip_r, flip_c in to_flip:
+                        clone[flip_r][flip_c] = color
+        return clone
 
-        def make_move(board, row, col, color):
-            board[row][col] = color
-            opposite_color = 2 if color == 1 else 1
-            directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-            for dr, dc in directions:
-                r, c = row + dr, col + dc
-                if 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == opposite_color:
-                    to_flip = []
-                    while 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == opposite_color:
-                        to_flip.append((r, c))
-                        r += dr
-                        c += dc
-                        if not (0 <= r < len(board) and 0 <= c < len(board[0])):
-                            break
-                    if 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == color:
-                        for flip_r, flip_c in to_flip:
-                            board[flip_r][flip_c] = color
-        #utility function -> calculate the value of a terminal state.
-        def utility_function(board, color):
-            score = 0 
+    def utility_function(self,board, color):
+            score = 0
             for row in board:
                 for cell in row:
                     if cell == color:
@@ -106,26 +118,28 @@ class AlphaBetaAI:
                         score -= 1
             return score
 
-        def is_game_over(board):
-            return not any(get_valid_moves(board, 1)) and not any(get_valid_moves(board, 2))
+    def is_game_over(self,board):
+        return not any(self.get_valid_moves(board, 1)) and not any(self.get_valid_moves(board, 2))
+
+    def alpha_beta_search(self, board, depth, color, alpha, beta):
 
         best_move = None
-        alpha = -math.inf
-        beta = math.inf
-        value = -math.inf
-        print("---------------------")
-        print("3")
+        value = -math.inf if color == self.color else math.inf
+        for move in self.get_valid_moves(board, color):
 
-        for move in get_valid_moves(board, color):
-            clone = clone_board(board)
+            clone = self.make_move(board, move[0], move[1], color)
+            print("first clone")
             for row in clone:
-
                 print(row)
-            make_move(clone, move[0], move[1], color)
-            new_value = max_value(alpha, beta, depth , color,clone)
-            if new_value > value:
+            print()
+            new_value = self.min_value(clone, depth-1, alpha, beta, 3 - color)
+            if color == self.color and new_value > value:
                 value = new_value
                 best_move = move
+                alpha = max(alpha, value)
+            elif color != self.color and new_value < value:
+                value = new_value
+                beta = min(beta, value)
+            if alpha >= beta:
+                break
         return best_move
-
-

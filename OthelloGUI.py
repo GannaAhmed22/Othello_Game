@@ -205,7 +205,7 @@ class OthelloGUI:
         self.center_window(winner_window, 300, 200)
         winner_window.resizable(False, False)
 
-        winner_label = tk.Label(winner_window, text=f"{winner}: {self.game.player_counts[1]}\n{self.game.player_counts[2]}",
+        winner_label = tk.Label(winner_window, text=f"{winner}",
                                 bg="#2E4053", fg="#EAECEE", font=("Helvetica", 20))
         winner_label.pack(pady=20)
 

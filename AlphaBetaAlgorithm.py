@@ -11,7 +11,7 @@ class AlphaBetaAI:
 
     def set_depth(self, difficulty):
         if difficulty == "easy":
-            return 1
+            return 40
         elif difficulty == "medium":
             return 3
         elif difficulty == "hard":

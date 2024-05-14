@@ -70,10 +70,7 @@ class OthelloGame:
         self.gui.buttons[row][col].config(bg=color, state="disabled")
         self.initial_state[row][col] = self.current_player
         self.player_pieces[self.current_player] -= 1
-        
-        if self.current_player == self.user_color:
-            self.gui.disable_buttons()
-        
+
         print("after move: ", self.current_player)
 
         # Flip opponent's disks

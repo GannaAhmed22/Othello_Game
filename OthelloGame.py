@@ -1,4 +1,3 @@
-import time
 from AlphaBetaAlgorithm import *
 from PossibleMovesIndicator import *
 
@@ -89,12 +88,9 @@ class OthelloGame:
             self.current_player = 2 if self.current_player == 1 else 1
 
             # mark board with possible moves
-            print("Before get possible moves: ", self.current_player)
-            self.print_board()
             self.initial_state = mark_possible_moves(
                 self.initial_state, self.current_player)
-            print("Possible moves for: ", self.current_player)
-            self.print_board()
+
 
             if not self.check_possible_moves():
                 # in case no possible moves for current player then switch to the next player
@@ -102,8 +98,7 @@ class OthelloGame:
                 # mark board with possible moves
                 self.initial_state = mark_possible_moves(
                     self.initial_state, self.current_player)
-                print("Possible moves for: ", self.current_player)
-                self.print_board()
+
 
                 if not self.check_possible_moves():
                     # in case no possible moves for both palyers game is over
@@ -172,10 +167,7 @@ class OthelloGame:
         # Set user move to the board
         self.update_board(row, col)
 
-        # Get AI move and set it to board
-        self.gui.master.after(1000, self.apply_ai_move)
-        
-    def apply_ai_move(self):
+
         while self.current_player == self.ai.color:
             move = self.ai.get_next_move(self.initial_state)
             if (move is None) or self.no_possible_moves or (self.check_winner() is not None):

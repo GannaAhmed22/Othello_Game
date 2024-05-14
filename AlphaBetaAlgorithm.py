@@ -65,6 +65,7 @@ class AlphaBetaAI:
             # for row in clone:
             #     print(row)
             # print()
+
             for move in self.get_valid_moves(clone, 3 - color):
                 clone = self.make_move(clone, move[0], move[1], color)
                 # print("min after move")

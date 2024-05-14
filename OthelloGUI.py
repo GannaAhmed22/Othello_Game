@@ -162,6 +162,13 @@ class OthelloGUI:
                 if current_cell != 3:
                     self.buttons[row][col].config(state="disabled")
 
+    def disable_buttons(self):
+        for row in range(self.game.board_size):
+            for col in range(self.game.board_size):
+                current_cell = self.game.initial_state[row][col]
+                color = self.game.player_colors.get(current_cell, "#45B39D")
+                self.buttons[row][col].config(state='disabled', bg=color)
+
     def update_player_labels(self):
         self.black_player = "You" if self.game.user_color == 1 else "A.I."
         self.white_player = "You" if self.game.user_color == 2 else "A.I."

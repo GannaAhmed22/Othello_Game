@@ -33,17 +33,17 @@ class AlphaBetaAI:
                 return self.utility_function(board, color)
             value = -math.inf
             clone = mark_possible_moves(board, color)
-            print(depth)
-            print("max before move")
-            for row in clone:
-                print(row)
-            print()
+            # print(depth)
+            # print("max before move")
+            # for row in clone:
+            #     print(row)
+            # print()
             for move in self.get_valid_moves(clone, color):
                 clone = self.make_move(clone, move[0], move[1], color)
-                print("max after move")
-                for row in clone:
-                    print(row)
-                print()
+                # print("max after move")
+                # for row in clone:
+                #     print(row)
+                # print()
 
                 value = max(value, self.min_value(clone, depth - 1, alpha, beta, 3 - color))
                 if value==0:break
@@ -60,17 +60,17 @@ class AlphaBetaAI:
                 return self.utility_function(board, color)
             value = math.inf
             clone = mark_possible_moves(board, color)
-            print(depth)
-            print("min before move")
-            for row in clone:
-                print(row)
-            print()
+            # print(depth)
+            # print("min before move")
+            # for row in clone:
+            #     print(row)
+            # print()
             for move in self.get_valid_moves(clone, 3 - color):
                 clone = self.make_move(clone, move[0], move[1], color)
-                print("min after move")
-                for row in clone:
-                    print(row)
-                print()
+                # print("min after move")
+                # for row in clone:
+                #     print(row)
+                # print()
                 value = min(value, self.max_value(
                     clone, depth - 1, alpha, beta, 3 - color))
                 if value == 0: break
@@ -108,15 +108,18 @@ class AlphaBetaAI:
                         clone[flip_r][flip_c] = color
         return clone
 
-    def utility_function(self,board, color):
-            score = 0
+    def utility_function(self,board,color):
+            score_Current_player = 0
+            score_opponent_player = 0
             for row in board:
                 for cell in row:
                     if cell == color:
-                        score += 1
+                        score_Current_player += 1
                     elif cell == 3 - color:
-                        score -= 1
-            return score
+                        score_opponent_player += 1
+
+            result=score_Current_player-score_opponent_player
+            return result
 
     def is_game_over(self,board):
         return not any(self.get_valid_moves(board, 1)) and not any(self.get_valid_moves(board, 2))
@@ -128,10 +131,10 @@ class AlphaBetaAI:
         for move in self.get_valid_moves(board, color):
 
             clone = self.make_move(board, move[0], move[1], color)
-            print("first clone")
-            for row in clone:
-                print(row)
-            print()
+            # print("first clone")
+            # for row in clone:
+            #     print(row)
+            # print()
             new_value = self.min_value(clone, depth-1, alpha, beta, 3 - color)
             if color == self.color and new_value > value:
                 value = new_value

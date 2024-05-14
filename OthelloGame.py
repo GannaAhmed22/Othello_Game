@@ -44,10 +44,6 @@ class OthelloGame:
         self.gui.update_board_gui()
 
     def check_winner(self):
-        if self.player_pieces[self.current_player] == 0:
-            print('Disks ran out')
-        if self.no_possible_moves:
-            print('No legal moves')
         
         if sum(self.player_counts.values()) == self.board_size ** 2 or self.player_pieces[self.current_player] == 0 or self.no_possible_moves:
             if self.player_counts[1] > self.player_counts[2]:
@@ -74,8 +70,6 @@ class OthelloGame:
         self.initial_state[row][col] = self.current_player
         self.player_pieces[self.current_player] -= 1
 
-        print("after move: ", self.current_player)
-
         # Flip opponent's disks
         self.flip_disks(row, col)
 
@@ -92,12 +86,7 @@ class OthelloGame:
             self.current_player = 2 if self.current_player == 1 else 1
 
             # mark board with possible moves
-            print("Before get possible moves: ", self.current_player)
-            self.print_board()
-            self.initial_state = mark_possible_moves(
-                self.initial_state, self.current_player)
-            print("Possible moves for: ", self.current_player)
-            self.print_board()
+            self.initial_state = mark_possible_moves(self.initial_state, self.current_player)
 
             if not self.check_possible_moves():
                 # in case no possible moves for current player then switch to the next player
@@ -105,9 +94,7 @@ class OthelloGame:
                 # mark board with possible moves
                 self.initial_state = mark_possible_moves(
                     self.initial_state, self.current_player)
-                print("Possible moves for: ", self.current_player)
-                self.print_board()
-
+               
                 if not self.check_possible_moves():
                     # in case no possible moves for both palyers game is over
                     if self.current_player == self.user_color:
@@ -122,7 +109,7 @@ class OthelloGame:
             # Update possible moves for Human in GUI
             if self.current_player == self.user_color:
                 self.gui.update_board_gui()
-                
+
     def check_possible_moves(self):
         for row in range(self.board_size):
             for col in range(self.board_size):
